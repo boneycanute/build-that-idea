@@ -133,9 +133,7 @@ export default function FloatingWidget() {
               >
                 <X size={18} strokeWidth={3} className="text-white/60" />
               </motion.button>
-              <span className="text-white">
-                {isInfoOpen ? "Info" : "Join waiting list"}
-              </span>
+              <span className="text-white">Join waiting list</span>
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
