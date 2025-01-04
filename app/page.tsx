@@ -1,135 +1,180 @@
 "use client";
-
 import React, { useState, useCallback, useEffect } from "react";
 import {
   EnhancedTypingAnimation,
   AnimationStep,
 } from "@/components/EnhancedTypingAnimation";
-import Particles from "@/components/ui/particles";
+import ClientParticles from "@/components/ClientParticles";
+import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
+// Define all animation steps with precise configuration
 const ANIMATION_STEPS: AnimationStep[] = [
   {
     id: 1,
-    text: "That Idea",
-    highlightWords: ["Idea"],
-    typingSpeed: 30, // Quick first step
+    text: "An Idea",
+    position: "center",
+    scaleUp: true,
+    typewriterEffect: true,
+    initialPosition: "center",
+    delay: 500,
   },
   {
     id: 2,
-    text: "Yeah, THAT Idea",
-    highlightWords: ["THAT", "Idea"],
-    typingSpeed: 60, // Emphasize with slower typing
+    text: "Every great idea starts as a spark",
+    position: "left",
+    typewriterEffect: true,
+    moveToPosition: "left",
+    highlightWords: ["spark"],
+    delay: 300,
   },
   {
     id: 3,
-    text: "The one you can't stop thinking about",
-    typingSpeed: 25, // Fast typing for longer text
+    text: "That spark becomes a vision",
+    position: "left",
+    typewriterEffect: true,
+    retainFromPrevious: true,
+    retainWords: 1,
+    highlightWords: ["spark", "vision"],
   },
   {
     id: 4,
-    text: "The one you talk about with your friends, saying, 'What if?'",
-    highlightWords: ["What if?"],
-    retainFromPrevious: true,
-    retainWords: 2, // Retains "The one"
-    typingSpeed: 45, // Slower for emphasis on "What if?"
+    text: "The one you can't stop thinking about",
+    position: "left",
+    typewriterEffect: true,
+    highlightWords: ["one"],
+    retainFromPrevious: false,
   },
   {
     id: 5,
-    text: "The one that pops up while you're driving, showering, or just daydreaming",
+    text: "The one that keeps you up at night",
+    position: "left",
+    typewriterEffect: true,
     retainFromPrevious: true,
-    retainWords: 2, // Retains "The one"
-    typingSpeed: 20, // Quick typing for familiar phrase
+    retainWords: 2,
+    highlightWords: ["one"],
   },
   {
     id: 6,
-    text: "It's time to stop thinking and start doing",
-    highlightWords: ["doing"],
-    typingSpeed: 70, // Dramatic pause with slow typing
+    text: "It's time to stop thinking",
+    position: "left",
+    typewriterEffect: true,
+    delay: 200,
   },
   {
     id: 7,
-    text: "Make THAT idea real",
-    highlightWords: ["THAT", "idea"],
-    typingSpeed: 40, // Punchy and quick
+    text: "And start building",
+    position: "left",
+    typewriterEffect: true,
+    highlightWords: ["building"],
   },
   {
     id: 8,
-    text: "The world's waiting—and it starts with you",
-    highlightWords: ["you"],
-    typingSpeed: 55, // Final message with dramatic timing
+    text: "Start Here Start Now",
+    position: "center",
+    typewriterEffect: true,
+    moveToPosition: "center",
+    fadeOut: true,
+    delay: 500,
+    scaleUp: true,
+    highlightWords: ["Now"],
   },
 ];
 
-const Page = () => {
+export default function Page() {
+  const pathname = usePathname();
   const [currentStep, setCurrentStep] = useState(1);
-  const [isFirstRender, setIsFirstRender] = useState(true);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
+  // Handle component mount
   useEffect(() => {
-    setIsFirstRender(false);
+    setIsMounted(true);
   }, []);
 
+  // Handle step completion
   const handleStepComplete = useCallback(() => {
     if (!document.hidden) {
-      setCurrentStep((prev) =>
-        prev === ANIMATION_STEPS.length ? 1 : prev + 1
-      );
+      setIsAnimating(true);
+      // Add a small delay before starting the next animation
+      setTimeout(() => {
+        setCurrentStep((prev) =>
+          prev === ANIMATION_STEPS.length ? 1 : prev + 1
+        );
+        setIsAnimating(false);
+      }, 200);
     }
   }, []);
 
-  // Animation timing configurations
-  const defaultTimings = {
-    typingSpeed: 40, // Base typing speed
-    displayDuration: 2500, // How long text stays visible
-    exitDelay: 800, // Delay before exit animation
-    highlightDelay: 300, // Wait before starting highlight
-    highlightDuration: 600, // Time to transition color
-  };
-
-  // Get step-specific timings
-  const getCurrentStepProps = () => {
-    const step = ANIMATION_STEPS[currentStep - 1];
-    return {
-      typingSpeed: step.typingSpeed || defaultTimings.typingSpeed,
+  // SVG placeholder based on current step
+  const renderSvgPlaceholder = (step: number) => {
+    const messages = {
+      1: "Lightbulb animation",
+      2: "Spark animation",
+      3: "Vision board animation",
+      4: "Thought bubble animation",
+      5: "Night sky animation",
+      6: "Clock animation",
+      7: "Building blocks animation",
+      8: "Arrow animation",
     };
+
+    return messages[step as keyof typeof messages] || "Loading...";
   };
 
-  const { typingSpeed } = getCurrentStepProps();
+  // Don't render anything until mounted
+  if (!isMounted) {
+    return null;
+  }
 
   return (
-    <main className="h-screen w-full flex flex-col lg:flex-row overflow-hidden bg-black text-white">
-      <Particles
-        className="absolute inset-0 z-0"
-        quantity={100}
-        ease={80}
-        color={"#C53AAE"}
-        size={1.5}
-        refresh
-      />
+    <main className="relative min-h-screen w-full overflow-hidden bg-black text-white font-sans">
+      {/* Particle background */}
+      <ClientParticles />
 
-      <section className="w-full lg:w-3/5 h-full flex items-center justify-center p-8 relative z-10">
-        <div className="max-w-2xl">
-          <EnhancedTypingAnimation
-            currentStep={currentStep}
-            steps={ANIMATION_STEPS}
-            onStepComplete={handleStepComplete}
-            typingSpeed={typingSpeed}
-            displayDuration={defaultTimings.displayDuration}
-            exitDelay={defaultTimings.exitDelay}
-            highlightDelay={defaultTimings.highlightDelay}
-            highlightDuration={defaultTimings.highlightDuration}
-            initialDelay={isFirstRender ? 1000 : 0}
-            className="text-4xl md:text-6xl font-bold mb-6"
-          />
-        </div>
-      </section>
+      {/* Content wrapper */}
+      <div className="relative z-10 w-full h-screen flex flex-col lg:flex-row items-center justify-center px-4 md:px-8">
+        {/* Text section */}
+        <section className="w-full lg:w-3/5 h-full flex items-center justify-center py-8 lg:py-0">
+          <div className="w-full max-w-2xl px-4">
+            <EnhancedTypingAnimation
+              currentStep={currentStep}
+              steps={ANIMATION_STEPS}
+              onStepComplete={handleStepComplete}
+              typingSpeed={50}
+              eraseSpeed={30}
+              className={cn(
+                "text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl",
+                "font-bold leading-tight md:leading-relaxed tracking-tight",
+                "break-words hyphens-auto",
+                isAnimating ? "opacity-90" : "opacity-100"
+              )}
+              startOnView={false}
+            />
+          </div>
+        </section>
 
-      <section className="w-full lg:w-2/5 h-full flex items-center justify-center p-8 relative z-10">
-        <div className="w-full max-w-md aspect-square bg-white/5 rounded-lg flex items-center justify-center">
-          <p className="text-white/50">SVG Animations will appear here</p>
-        </div>
-      </section>
+        {/* SVG Animation section */}
+        <section className="w-full lg:w-2/5 h-full flex items-center justify-center py-8 lg:py-0">
+          <div
+            className={cn(
+              "w-full max-w-md aspect-square rounded-lg",
+              "backdrop-blur-sm bg-white/5",
+              "border border-white/10",
+              "flex items-center justify-center",
+              "transition-all duration-500 ease-in-out",
+              "p-4 mx-4"
+            )}
+          >
+            <p className="text-white/50 text-center">
+              {renderSvgPlaceholder(currentStep)}
+              <span className="block mt-2 text-sm opacity-50">
+                Step {currentStep} of {ANIMATION_STEPS.length}
+              </span>
+            </p>
+          </div>
+        </section>
+      </div>
     </main>
   );
-};
-
-export default Page;
+}

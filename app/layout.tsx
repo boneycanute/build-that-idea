@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 
 const FloatingWidget = dynamic(() => import("@/components/FloatingWidget"), {
   ssr: false,
+  loading: () => null, // Optional loading component
 });
 
 // Font setup

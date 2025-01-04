@@ -1,11 +1,118 @@
-That idea.
-Yeah, THAT idea.
-The one you can’t stop thinking about.
-The one you talk about with your friends, saying, ‘What if?’
-The one that pops up while you’re driving, showering, or just daydreaming.
-
-It’s time to stop thinking and start doing.
-Make THAT idea real.
-The world’s waiting—and it starts with you
+Step 1 : That idea.
+Step 2 : Yeah, THAT idea.
+Step 3 : The one you can’t stop thinking about.
+Step 4 : The one you talk about with your friends, saying, ‘What if?’
+Step 5 : The one that pops up while you’re driving, showering, or just daydreaming.
+Step 6 : It’s time to stop thinking and start doing.
+Step 7 : Make THAT idea real.
+Step 8 : The world’s waiting—and it starts with you
 
 rgb(197, 58, 174)
+
+New Script
+
+Step 1: An idea.
+Step 2: Every great idea starts as a spark.
+Step 3: That spark? It’s your idea.
+Step 4: The one that feels too big to ignore.
+Step 5: The one that whispers, “This could change everything.”
+Step 6: It’s not just a dream—it’s a calling.
+Step 7: The world needs what you’re imagining.
+Step 8: Start here. Start now.
+
+# Build That Idea - Project Requirements Specification
+
+## Tech Stack & Configuration
+- Next.js project with Tailwind CSS integration
+- shadcn/ui for component library
+- Framer Motion for animations
+
+## Color Scheme
+- Primary Colors:
+  - Pure Black
+  - White
+  - Accent Color: rgb(197, 58, 174)
+
+## Layout Component (layout.tsx)
+### Floating Widget
+- Label: "Build that Idea"
+- Position: Floating above main content
+- Behavior: 
+  - Initially displays as compact floating element
+  - On click, expands to fullscreen
+  - Applies blur effect to background content
+### Form Component
+- Expands from floating widget
+- Contains:
+  - Name input field
+  - Email input field
+- Must be responsive for both desktop and mobile views
+
+## Main Page Component (page.tsx)
+### Layout Structure
+- Non-scrolling, fullscreen design
+- Split layout:
+  - Left section: 60% width (Typography)
+  - Right section: 40% width (SVG Animations)
+
+Animation Flow Overview
+Page Load (Step 1 - "An Idea"):
+
+Typography Animation:
+"An Idea" appears with a smooth fade-in and scales up to a large size at the center of the screen.
+Transition to Step 2:
+"An Idea" moves smoothly to the left.
+An SVG of a light bulb fades in and appears on the right with hover effects.
+Step 2 - Refinement of "Idea":
+
+Typewriter Effect:
+Erase the word "An" using a typewriter animation.
+Add "Every great" before "idea" and "starts as a spark" after, split on the left and right of the bulb.
+Glow Effect:
+The bulb SVG glows momentarily when this animation completes.
+Step 3 - Transition to "Spark":
+
+Typewriter Effect:
+Erase the text "Every great idea starts as a spark."
+Retain "spark" momentarily.
+Introduce new text that describes the next step, keeping animation consistent with the typewriter effect.
+SVG Transition:
+The bulb SVG changes smoothly to another relevant icon (e.g., a flame, star, etc.).
+Steps 4 and 5 - Focus on "The One":
+
+Typography Highlighting:
+Retain "The one" in the animation.
+Introduce new words dynamically to complete sentences, while ensuring "The one" persists between transitions.
+Steps 6 and 7 - Entire Text Transition:
+
+Erase all existing text dynamically using the typewriter effect.
+Bring in new typography for the steps without a retained word. Each transition should use a smooth fade-out/fade-in effect for balance.
+Final Step (Step 8 - "Start Here, Start Now"):
+
+"Start Here" appears first.
+After a short delay, "Start Now" appears.
+Add a fade-out effect for "Start Here."
+Reset the animation to Step 1:
+Fade out all text and the SVG, leaving the screen empty momentarily.
+Reintroduce "An Idea" at the center with the original animation to loop the sequence.
+
+
+### SVG Animation Requirements
+- Multiple SVGs per step
+- Synchronized with typography animations
+- Complex transitions between steps
+- Combined/orchestrated SVG animations
+- Smooth integration with text transitions
+
+
+## Responsive Design Requirements
+- Layout must adapt smoothly between desktop and mobile views
+- Floating widget must maintain functionality across all device sizes
+- Animations must be optimized for different screen sizes
+- Typography must remain legible across all breakpoints
+
+## Performance Considerations
+- Animations should be smooth and performant
+- SVG animations should be optimized
+- Typography animations should not cause layout shifts
+- Form interactions should be responsive and immediate
