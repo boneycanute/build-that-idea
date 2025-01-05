@@ -29,7 +29,7 @@ export default function FloatingWidget() {
         {(isWidgetOpen || isInfoOpen) && (
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="fixed inset-0 bg-white/10 backdrop-blur-sm"
@@ -55,35 +55,25 @@ export default function FloatingWidget() {
               transition: spring,
             }}
             exit={{ y: 20, opacity: 0 }}
-            className="fixed bottom-8 mx-auto left-0 right-0 bg-black/70 backdrop-blur-lg border border-white/20 rounded-2xl shadow-lg w-[280px]"
+            className="fixed bottom-8 mx-auto left-0 right-0  backdrop-blur-lg border border-white/20 rounded-2xl shadow-lg w-[280px]"
             style={{ zIndex: 9999 }}
           >
             <motion.div layout className="p-6 flex flex-col items-center">
               {/* Top Controls */}
-              <div className="flex justify-between w-full mb-4">
+              <div className="flex items-center justify-center mb-4 relative w-full">
                 <button
                   onClick={() => setIsInfoOpen(true)}
-                  className="w-6 h-6 rounded-full border border-white/20 flex items-center justify-center text-white/60 text-sm hover:bg-white/10 transition-colors"
+                  className="absolute left-0 w-6 h-6 rounded-full border border-white/20 flex items-center justify-center text-white/60 text-sm hover:bg-white/10 transition-colors"
                 >
                   i
                 </button>
-                <div
-                  className="w-10 h-6 bg-white/10 rounded-full relative cursor-pointer"
-                  onClick={() => setIsDarkMode(!isDarkMode)}
+                <motion.h2
+                  layout
+                  className="text-xl font-medium text-white mx-auto"
                 >
-                  <motion.div
-                    layout
-                    transition={spring}
-                    className={`absolute w-5 h-5 rounded-full top-0.5 bg-white ${
-                      isDarkMode ? "right-0.5" : "left-0.5"
-                    }`}
-                  />
-                </div>
+                  BuildThatApp
+                </motion.h2>
               </div>
-
-              <motion.h2 layout className="text-xl font-medium text-white mb-4">
-                BuildThatApp
-              </motion.h2>
 
               <motion.button
                 layout
