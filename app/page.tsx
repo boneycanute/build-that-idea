@@ -122,19 +122,19 @@ export default function Home() {
             <motion.div
               layout
               style={{ width: `${widgetWidth}px` }}
-              className="backdrop-blur-lg border border-white/20 rounded-2xl shadow-lg overflow-hidden bg-black/70"
+              className="backdrop-blur-lg border border-white rounded-2xl shadow-lg overflow-hidden bg-white"
             >
               <motion.div layout className="p-6 flex flex-col items-center">
                 <div className="flex items-center justify-center mb-4 relative w-full">
                   <button
                     onClick={() => setIsInfoOpen(true)}
-                    className="absolute left-0 w-6 h-6 rounded-full border border-white/20 flex items-center justify-center text-white/60 text-sm hover:bg-white/10 transition-colors"
+                    className="absolute left-0 w-6 h-6 rounded-full border border-black flex items-center justify-center text-black text-sm hover:bg-white/10 transition-colors"
                   >
                     i
                   </button>
                   <motion.h2
                     layout
-                    className="text-xl font-medium text-white mx-auto"
+                    className="text-xl font-medium text-black mx-auto"
                   >
                     Build That Idea
                   </motion.h2>
@@ -145,7 +145,7 @@ export default function Home() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setIsWidgetOpen(true)}
-                  className="w-full bg-white text-black rounded-xl py-3 px-4 flex items-center justify-between group hover:bg-gray-100 transition-colors"
+                  className="w-full bg-black text-white rounded-xl py-3 px-4 flex items-center justify-between group hover:bg-gray-100 transition-colors"
                 >
                   <span>Join the waiting list</span>
                   <ChevronRight
@@ -255,6 +255,11 @@ export default function Home() {
                     <input
                       type="email"
                       placeholder="Type your email..."
+                      className="w-full p-4 rounded-xl bg-white/10 text-white placeholder-white/40 outline-none focus:ring-2 focus:ring-white/20 transition-shadow"
+                    />
+                    <input
+                      type="text"
+                      placeholder="What's your Idea..."
                       className="w-full p-4 rounded-xl bg-white/10 text-white placeholder-white/40 outline-none focus:ring-2 focus:ring-white/20 transition-shadow"
                     />
                   </motion.div>
