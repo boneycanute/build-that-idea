@@ -21,6 +21,13 @@ Step 6: It’s not just a dream—it’s a calling.
 Step 7: The world needs what you’re imagining.
 Step 8: Start here. Start now.
 
+
+// Emo Script 
+That idea...
+YES... THAT... IDEA!
+The one you CAN'T stop thinking about. The one you talk about with your friends, saying "What if...?" The one that pops up while you're driving, showering, or just daydreaming...
+It's time to STOP thinking, and START DOING! Make THAT idea REAL. The world's waiting and it starts with YOU!
+
 # Build That Idea - Project Requirements Specification
 
 ## Tech Stack & Configuration

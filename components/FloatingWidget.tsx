@@ -71,7 +71,7 @@ export default function FloatingWidget() {
                   layout
                   className="text-xl font-medium text-white mx-auto"
                 >
-                  BuildThatApp
+                  Build That Idea
                 </motion.h2>
               </div>
 
