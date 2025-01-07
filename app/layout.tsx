@@ -1,12 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import dynamic from "next/dynamic";
-
-const FloatingWidget = dynamic(() => import("@/components/FloatingWidget"), {
-  ssr: false,
-  loading: () => null, // Optional loading component
-});
 
 // Font setup
 const neueMontreal = localFont({
@@ -67,10 +61,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={neueMontreal.variable}>
-      <body className="bg-black text-white font-sans">
-        {children}
-        <FloatingWidget />
-      </body>
+      <body className="bg-black text-white font-sans">{children}</body>
     </html>
   );
 }
