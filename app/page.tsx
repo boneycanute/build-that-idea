@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { Play, Pause, ChevronRight, X, Check } from "lucide-react";
 
 const LoadingCat = () => (
@@ -26,6 +26,7 @@ export default function Home() {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [widgetWidth, setWidgetWidth] = useState<number>(0);
   const [isVideoReady, setIsVideoReady] = useState(false);
+  const [isModalClosing, setIsModalClosing] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -33,10 +34,21 @@ export default function Home() {
   const videoUrl =
     "https://wnrltivdaalwykzlblpr.supabase.co/storage/v1/object/sign/typography/BTI.mp4?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJ0eXBvZ3JhcGh5L0JUSS5tcDQiLCJpYXQiOjE3MzYyNTEzMDEsImV4cCI6MzE3MDk2MjUxMzAxfQ.TIh2tU1ZIarkFhmYaAAowyeLevBvBBPtneFTN0kog4o&t=2025-01-07T12%3A01%3A38.008Z";
 
-  const spring = {
+  const smoothTransition = {
     type: "spring",
-    stiffness: 400,
-    damping: 60,
+    stiffness: 300,
+    damping: 30,
+    mass: 1,
+  };
+
+  const handleCloseModal = () => {
+    setIsModalClosing(true);
+    setIsWidgetOpen(false);
+    setIsInfoOpen(false);
+    // Reset the closing state after animation
+    setTimeout(() => {
+      setIsModalClosing(false);
+    }, 300); // Match this with your animation duration
   };
 
   const togglePlayPause = async () => {
@@ -84,81 +96,104 @@ export default function Home() {
   return (
     <div className="relative w-full min-h-screen bg-black">
       <main className="w-full min-h-screen flex flex-col items-center justify-center p-4 md:p-8">
-        <div ref={containerRef} className="flex flex-col items-center gap-8">
-          {/* Video Container */}
-          <div className="relative group">
-            <video
-              ref={videoRef}
-              className="h-[70vh] w-auto rounded-2xl shadow-2xl"
-              playsInline
-              loop
-              preload="auto"
-            >
-              <source src={videoUrl} type="video/mp4" />
-            </video>
-
-            <button
-              onClick={togglePlayPause}
-              className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
-                       bg-black/50 hover:bg-black/70 transition-all duration-300 
-                       w-16 h-16 rounded-full flex items-center justify-center
-                       backdrop-blur-sm hover:scale-105
-                       ${
-                         isPlaying
-                           ? "opacity-0 group-hover:opacity-100"
-                           : "opacity-100"
-                       }`}
-            >
-              {isPlaying ? (
-                <Pause className="w-8 h-8 text-white" />
-              ) : (
-                <Play className="w-8 h-8 text-white ml-1" />
-              )}
-            </button>
-          </div>
-
-          {/* Closed Widget State */}
-          {!isWidgetOpen && !isInfoOpen && isVideoReady && (
+        <LayoutGroup>
+          <motion.div
+            ref={containerRef}
+            className="flex flex-col items-center"
+            layout="position"
+            transition={smoothTransition}
+          >
+            {/* Video Container */}
             <motion.div
-              layout
-              style={{ width: `${widgetWidth}px` }}
-              className="backdrop-blur-lg border border-white rounded-2xl shadow-lg overflow-hidden bg-white"
+              className="relative group"
+              layout="position"
+              transition={smoothTransition}
             >
-              <motion.div layout className="p-6 flex flex-col items-center">
-                <div className="flex items-center justify-center mb-4 relative w-full">
-                  <button
-                    onClick={() => setIsInfoOpen(true)}
-                    className="absolute left-0 w-6 h-6 rounded-full border border-black flex items-center justify-center text-black text-sm hover:bg-white/10 transition-colors"
-                  >
-                    i
-                  </button>
-                  <motion.h2
-                    layout
-                    className="text-xl font-medium text-black mx-auto"
-                  >
-                    Build That Idea
-                  </motion.h2>
-                </div>
+              <video
+                ref={videoRef}
+                className="h-[70vh] w-auto rounded-2xl shadow-2xl"
+                playsInline
+                loop
+                preload="auto"
+              >
+                <source src={videoUrl} type="video/mp4" />
+              </video>
 
-                <motion.button
-                  layout
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setIsWidgetOpen(true)}
-                  className="w-full bg-black text-white rounded-xl py-3 px-4 flex items-center justify-between group hover:bg-gray-100 transition-colors"
-                >
-                  <span>Join the waiting list</span>
-                  <ChevronRight
-                    className="group-hover:translate-x-1 transition-transform duration-300"
-                    size={18}
-                  />
-                </motion.button>
-              </motion.div>
+              <button
+                onClick={togglePlayPause}
+                className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
+                         bg-black/50 hover:bg-black/70 transition-all duration-300 
+                         w-16 h-16 rounded-full flex items-center justify-center
+                         backdrop-blur-sm hover:scale-105
+                         ${
+                           isPlaying
+                             ? "opacity-0 group-hover:opacity-100"
+                             : "opacity-100"
+                         }`}
+              >
+                {isPlaying ? (
+                  <Pause className="w-8 h-8 text-white" />
+                ) : (
+                  <Play className="w-8 h-8 text-white ml-1" />
+                )}
+              </button>
             </motion.div>
-          )}
 
-          {isBuffering && <LoadingCat />}
-        </div>
+            {/* Closed Widget State */}
+            <AnimatePresence mode="popLayout">
+              {!isWidgetOpen &&
+                !isInfoOpen &&
+                isVideoReady &&
+                !isModalClosing && (
+                  <motion.div
+                    layout="position"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={smoothTransition}
+                    style={{ width: `${widgetWidth}px` }}
+                    className="backdrop-blur-lg border border-white/20 rounded-2xl shadow-lg overflow-hidden bg-black/70 mt-8"
+                  >
+                    <motion.div
+                      layout="position"
+                      className="p-6 flex flex-col items-center"
+                    >
+                      <div className="flex items-center justify-center mb-4 relative w-full">
+                        <button
+                          onClick={() => setIsInfoOpen(true)}
+                          className="absolute left-0 w-6 h-6 rounded-full border border-white/20 flex items-center justify-center text-white/60 text-sm hover:bg-white/10 transition-colors"
+                        >
+                          i
+                        </button>
+                        <motion.h2
+                          layout="position"
+                          className="text-xl font-medium text-white mx-auto"
+                        >
+                          Build That Idea
+                        </motion.h2>
+                      </div>
+
+                      <motion.button
+                        layout="position"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setIsWidgetOpen(true)}
+                        className="w-full bg-white text-black rounded-xl py-3 px-4 flex items-center justify-between group hover:bg-gray-100 transition-colors"
+                      >
+                        <span>Join the waiting list</span>
+                        <ChevronRight
+                          className="group-hover:translate-x-1 transition-transform duration-300"
+                          size={18}
+                        />
+                      </motion.button>
+                    </motion.div>
+                  </motion.div>
+                )}
+            </AnimatePresence>
+
+            {isBuffering && <LoadingCat />}
+          </motion.div>
+        </LayoutGroup>
       </main>
 
       {/* Modal Portal */}
@@ -171,35 +206,29 @@ export default function Home() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-              onClick={() => {
-                setIsWidgetOpen(false);
-                setIsInfoOpen(false);
-              }}
+              onClick={handleCloseModal}
             />
 
             <motion.div
-              layout
+              layout="position"
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              transition={spring}
+              transition={smoothTransition}
               className="relative w-[280px] max-w-[90vw] m-4"
             >
               {/* Header */}
               <motion.div
-                layout
+                layout="position"
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.1, ...spring }}
+                transition={{ delay: 0.1, ...smoothTransition }}
                 className="bg-black text-white rounded-full px-4 py-2 mb-4 mx-auto flex items-center justify-between gap-4 w-fit"
               >
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  onClick={() => {
-                    setIsWidgetOpen(false);
-                    setIsInfoOpen(false);
-                  }}
+                  onClick={handleCloseModal}
                   className="p-1 hover:bg-white/10 rounded-full transition-colors"
                 >
                   <X size={18} strokeWidth={3} className="text-white/60" />
@@ -224,14 +253,17 @@ export default function Home() {
 
               {/* Modal Content */}
               <motion.div
-                layout
+                layout="position"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2, ...spring }}
+                transition={{ delay: 0.2, ...smoothTransition }}
                 className="bg-zinc-900 rounded-3xl p-6 shadow-lg w-full"
               >
                 {isInfoOpen ? (
-                  <motion.div layout className="space-y-4 text-center">
+                  <motion.div
+                    layout="position"
+                    className="space-y-4 text-center"
+                  >
                     <div className="text-xs text-white/60">0.0.1</div>
                     <div className="text-xl font-medium text-white">
                       BuildThatIdea
@@ -246,7 +278,7 @@ export default function Home() {
                     </div>
                   </motion.div>
                 ) : (
-                  <motion.div layout className="space-y-3">
+                  <motion.div layout="position" className="space-y-3">
                     <input
                       type="text"
                       placeholder="Type your name..."
