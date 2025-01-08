@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 
 // Font setup
 const neueMontreal = localFont({
@@ -61,7 +62,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={neueMontreal.variable}>
-      <body className="bg-black text-white font-sans">{children}</body>
+      <body className="bg-black text-white font-sans">
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

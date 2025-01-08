@@ -1,10 +1,10 @@
 "use client";
-
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { Play, Pause, ChevronRight, X, Check } from "lucide-react";
 import { DotPattern } from "@/components/ui/dot-pattern";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 const LoadingCat = () => (
@@ -50,13 +50,14 @@ export default function Home() {
   };
 
   useEffect(() => {
+    // Set initial width
+    setWidgetWidth(calculateVideoWidth());
+    setIsVideoReady(true);
+
     // Update width on resize
     const handleResize = () => {
       setWidgetWidth(calculateVideoWidth());
     };
-    // Set initial width
-    setWidgetWidth(calculateVideoWidth());
-    setIsVideoReady(true);
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
@@ -172,7 +173,7 @@ export default function Home() {
                       <div className="flex items-center justify-center mb-4 relative w-full">
                         <button
                           onClick={() => setIsInfoOpen(true)}
-                          className="absolute left-0 w-6 h-6 rounded-full border border-white/20 flex items-center justify-center text-white/60 text-sm hover:bg-white/10 transition-colors"
+                          className="absolute left-0 w-6 h-6 rounded-full border border-white flex items-center justify-center text-white text-sm hover:bg-white/10 transition-colors"
                         >
                           i
                         </button>
@@ -257,6 +258,13 @@ export default function Home() {
                       size={18}
                       strokeWidth={3}
                       className="text-green-400"
+                      onClick={() => {
+                        console.log("Thanks for joining the waiting list!");
+                        toast("Thanks for joining the waiting list!", {
+                          description:
+                            "We'll keep you updated with the latest news",
+                        });
+                      }}
                     />
                   </motion.button>
                 )}
@@ -293,16 +301,19 @@ export default function Home() {
                     <input
                       type="text"
                       placeholder="Type your name..."
+                      required
                       className="w-full p-4 rounded-xl bg-white/10 text-white placeholder-white/40 outline-none focus:ring-2 focus:ring-white/20 transition-shadow"
                     />
                     <input
                       type="email"
                       placeholder="Type your email..."
+                      required
                       className="w-full p-4 rounded-xl bg-white/10 text-white placeholder-white/40 outline-none focus:ring-2 focus:ring-white/20 transition-shadow"
                     />
                     <input
                       type="text"
                       placeholder="What's your Idea..."
+                      required
                       className="w-full p-4 rounded-xl bg-white/10 text-white placeholder-white/40 outline-none focus:ring-2 focus:ring-white/20 transition-shadow"
                     />
                   </motion.div>
