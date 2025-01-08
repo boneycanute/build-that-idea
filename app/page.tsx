@@ -22,6 +22,7 @@ const LoadingCat = () => (
 );
 
 export default function Home() {
+  // Video and UI States
   const [isBuffering, setIsBuffering] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isWidgetOpen, setIsWidgetOpen] = useState(false);
@@ -31,11 +32,20 @@ export default function Home() {
   const [isModalClosing, setIsModalClosing] = useState(false);
   const [isChevronRotated, setIsChevronRotated] = useState(false);
 
+  // Form State
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    idea: "",
+  });
+
+  // Refs
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Constants
   const videoUrl =
-    "https://wnrltivdaalwykzlblpr.supabase.co/storage/v1/object/sign/typography/BTI.mp4?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJ0eXBvZ3JhcGh5L0JUSS5tcDQiLCJpYXQiOjE3MzYyNTEzMDEsImV4cCI6MzE3MDk2MjUxMzAxfQ.TIh2tU1ZIarkFhmYaAAowyeLevBvBBPtneFTN0kog4o&t=2025-01-07T12%3A01%3A38.008Z";
+    "https://iihjwfaismtsxlakbniw.supabase.co/storage/v1/object/sign/buildThatIdea/BTI.mp4?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJidWlsZFRoYXRJZGVhL0JUSS5tcDQiLCJpYXQiOjE3MzYzMjAzNDYsImV4cCI6MzMyNzIzMjAzNDZ9.Y4S6yNU3w-wSvsxA4eR_gqhiWg5HMqltzcyOnHBrghM&t=2025-01-08T07%3A12%3A22.946Z";
 
   const smoothTransition = {
     type: "spring",
@@ -44,23 +54,12 @@ export default function Home() {
     mass: 1,
   };
 
+  // Handlers
   const calculateVideoWidth = () => {
     const videoHeight = window.innerHeight * 0.7;
     const aspectRatio = 9 / 16;
     return videoHeight * aspectRatio;
   };
-
-  useEffect(() => {
-    setWidgetWidth(calculateVideoWidth());
-    setIsVideoReady(true);
-
-    const handleResize = () => {
-      setWidgetWidth(calculateVideoWidth());
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   const handleCloseModal = () => {
     setIsModalClosing(true);
@@ -97,6 +96,59 @@ export default function Home() {
       setIsBuffering(false);
     }
   };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast.error(data.message || data.error, {
+          description: "Please try again with a different email",
+        });
+        return;
+      }
+
+      toast.success(data.message, {
+        description: "We'll keep you updated with the latest news",
+      });
+
+      // Clear form and close modal
+      setFormData({ name: "", email: "", idea: "" });
+      handleCloseModal();
+    } catch (error) {
+      toast.error("Something went wrong!", {
+        description: "Please try again later",
+      });
+    }
+  };
+
+  // Effects
+  useEffect(() => {
+    setWidgetWidth(calculateVideoWidth());
+    setIsVideoReady(true);
+
+    const handleResize = () => {
+      setWidgetWidth(calculateVideoWidth());
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <div className="relative w-full min-h-screen bg-black">
@@ -262,20 +314,12 @@ export default function Home() {
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
                           className="p-1 hover:bg-black/10 rounded-full transition-colors"
+                          onClick={handleSubmit}
                         >
                           <Check
                             size={18}
                             strokeWidth={3}
                             className="text-green-600"
-                            onClick={() => {
-                              console.log(
-                                "Thanks for joining the waiting list!"
-                              );
-                              toast("Thanks for joining the waiting list!", {
-                                description:
-                                  "We'll keep you updated with the latest news",
-                              });
-                            }}
                           />
                         </motion.button>
                       )}
@@ -310,18 +354,27 @@ export default function Home() {
                         <motion.div layout="position" className="space-y-3">
                           <input
                             type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleInputChange}
                             placeholder="Type your name..."
                             required
                             className="w-full p-4 rounded-xl bg-black/10 text-black placeholder-black/40 outline-none focus:ring-2 focus:ring-black/20 transition-shadow"
                           />
                           <input
                             type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleInputChange}
                             placeholder="Type your email..."
                             required
                             className="w-full p-4 rounded-xl bg-black/10 text-black placeholder-black/40 outline-none focus:ring-2 focus:ring-black/20 transition-shadow"
                           />
                           <input
                             type="text"
+                            name="idea"
+                            value={formData.idea}
+                            onChange={handleInputChange}
                             placeholder="What's your Idea..."
                             required
                             className="w-full p-4 rounded-xl bg-black/10 text-black placeholder-black/40 outline-none focus:ring-2 focus:ring-black/20 transition-shadow"
