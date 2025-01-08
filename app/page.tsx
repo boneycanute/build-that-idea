@@ -29,6 +29,7 @@ export default function Home() {
   const [widgetWidth, setWidgetWidth] = useState<number>(0);
   const [isVideoReady, setIsVideoReady] = useState(false);
   const [isModalClosing, setIsModalClosing] = useState(false);
+  const [isChevronRotated, setIsChevronRotated] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -65,9 +66,17 @@ export default function Home() {
     setIsModalClosing(true);
     setIsWidgetOpen(false);
     setIsInfoOpen(false);
+    setIsChevronRotated(false);
     setTimeout(() => {
       setIsModalClosing(false);
     }, 300);
+  };
+
+  const handleOpenModal = () => {
+    setIsChevronRotated(true);
+    setTimeout(() => {
+      setIsWidgetOpen(true);
+    }, 250);
   };
 
   const togglePlayPause = async () => {
@@ -91,46 +100,6 @@ export default function Home() {
 
   return (
     <div className="relative w-full min-h-screen bg-black">
-      <style jsx global>{`
-        @keyframes borderAnimation {
-          0% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-          100% {
-            background-position: 0% 50%;
-          }
-        }
-
-        .rainbow-border-button {
-          position: relative;
-          background: black;
-        }
-
-        .rainbow-border-button::before {
-          content: "";
-          position: absolute;
-          top: -2px;
-          left: -2px;
-          right: -2px;
-          bottom: -2px;
-          background: linear-gradient(
-            45deg,
-            #800080,
-            /* Purple */ #9400d3,
-            /* Darker Purple */ #dc143c,
-            /* Crimson Red */ #800080
-              /* Back to Purple to create seamless loop */
-          );
-          background-size: 300% 300%;
-          animation: borderAnimation 4s ease infinite;
-          border-radius: 0.75rem;
-          z-index: -1;
-        }
-      `}</style>
-
       <DotPattern
         width={32}
         height={32}
@@ -187,174 +156,188 @@ export default function Home() {
               </button>
             </motion.div>
 
-            <AnimatePresence mode="popLayout">
+            <AnimatePresence mode="wait">
               {!isWidgetOpen &&
-                !isInfoOpen &&
-                isVideoReady &&
-                !isModalClosing && (
+              !isInfoOpen &&
+              isVideoReady &&
+              !isModalClosing ? (
+                <motion.div
+                  key="closed-widget"
+                  layout="position"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={smoothTransition}
+                  style={{ width: `${widgetWidth}px` }}
+                  className="backdrop-blur-lg border border-black/20 rounded-2xl shadow-lg overflow-hidden bg-white mt-8"
+                >
                   <motion.div
                     layout="position"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
+                    className="p-6 flex flex-col items-center"
+                  >
+                    <div className="flex items-center justify-center mb-4 relative w-full">
+                      <button
+                        onClick={() => setIsInfoOpen(true)}
+                        className="absolute left-0 w-6 h-6 rounded-full border border-black flex items-center justify-center text-black text-sm hover:bg-black/10 transition-colors"
+                      >
+                        i
+                      </button>
+                      <motion.h2
+                        layout="position"
+                        className="text-xl font-medium text-black mx-auto"
+                      >
+                        Build That Idea
+                      </motion.h2>
+                    </div>
+
+                    <motion.button
+                      layout="position"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={handleOpenModal}
+                      className="w-full bg-black text-white rounded-xl py-3 px-4 flex items-center justify-between group transition-colors"
+                    >
+                      <span>Join the waiting list</span>
+                      <motion.div
+                        animate={{ rotate: isChevronRotated ? -90 : 0 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 260,
+                          damping: 20,
+                        }}
+                      >
+                        <ChevronRight
+                          className="transition-transform duration-300"
+                          size={18}
+                        />
+                      </motion.div>
+                    </motion.button>
+                  </motion.div>
+                </motion.div>
+              ) : isWidgetOpen || isInfoOpen ? (
+                <motion.div
+                  key="modal"
+                  className="fixed inset-0 z-50 flex items-center justify-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <motion.div
+                    className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                    onClick={handleCloseModal}
+                  />
+
+                  <motion.div
+                    layout="position"
+                    initial={{ scale: 0.95, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.95, opacity: 0 }}
                     transition={smoothTransition}
-                    style={{ width: `${widgetWidth}px` }}
-                    className="backdrop-blur-lg border border-black/20 rounded-2xl shadow-lg overflow-hidden bg-white mt-8"
+                    className="relative w-[280px] max-w-[90vw] m-4"
                   >
                     <motion.div
                       layout="position"
-                      className="p-6 flex flex-col items-center"
+                      initial={{ y: -20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.1, ...smoothTransition }}
+                      className="bg-white text-black rounded-full px-4 py-2 mb-4 mx-auto flex items-center justify-between gap-4 w-fit"
                     >
-                      <div className="flex items-center justify-center mb-4 relative w-full">
-                        <button
-                          onClick={() => setIsInfoOpen(true)}
-                          className="absolute left-0 w-6 h-6 rounded-full border border-black flex items-center justify-center text-black text-sm hover:bg-black/10 transition-colors"
-                        >
-                          i
-                        </button>
-                        <motion.h2
-                          layout="position"
-                          className="text-xl font-medium text-black mx-auto"
-                        >
-                          Build That Idea
-                        </motion.h2>
-                      </div>
-
                       <motion.button
-                        layout="position"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => setIsWidgetOpen(true)}
-                        className="rainbow-border-button w-full text-white rounded-xl py-3 px-4 flex items-center justify-between group transition-transform"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={handleCloseModal}
+                        className="p-1 hover:bg-black/10 rounded-full transition-colors"
                       >
-                        <span>Join the waiting list</span>
-                        <ChevronRight
-                          className="group-hover:translate-x-1 transition-transform duration-300"
+                        <X
                           size={18}
+                          strokeWidth={3}
+                          className="text-black/60"
                         />
                       </motion.button>
+                      <span className="text-black">
+                        {isInfoOpen ? "About" : "Join waiting list"}
+                      </span>
+                      {!isInfoOpen && (
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          className="p-1 hover:bg-black/10 rounded-full transition-colors"
+                        >
+                          <Check
+                            size={18}
+                            strokeWidth={3}
+                            className="text-green-600"
+                            onClick={() => {
+                              console.log(
+                                "Thanks for joining the waiting list!"
+                              );
+                              toast("Thanks for joining the waiting list!", {
+                                description:
+                                  "We'll keep you updated with the latest news",
+                              });
+                            }}
+                          />
+                        </motion.button>
+                      )}
+                    </motion.div>
+
+                    <motion.div
+                      layout="position"
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.2, ...smoothTransition }}
+                      className="bg-white rounded-3xl p-6 shadow-lg w-full"
+                    >
+                      {isInfoOpen ? (
+                        <motion.div
+                          layout="position"
+                          className="space-y-4 text-center"
+                        >
+                          <div className="text-xs text-black/60">0.0.1</div>
+                          <div className="text-xl font-medium text-black">
+                            BuildThatIdea
+                          </div>
+                          <p className="text-black/80">
+                            Build your next big idea
+                            <br />
+                            with our AI Companion
+                          </p>
+                          <div className="bg-black/10 text-black rounded-full px-4 py-2 text-sm">
+                            http://buildthatidea.com
+                          </div>
+                        </motion.div>
+                      ) : (
+                        <motion.div layout="position" className="space-y-3">
+                          <input
+                            type="text"
+                            placeholder="Type your name..."
+                            required
+                            className="w-full p-4 rounded-xl bg-black/10 text-black placeholder-black/40 outline-none focus:ring-2 focus:ring-black/20 transition-shadow"
+                          />
+                          <input
+                            type="email"
+                            placeholder="Type your email..."
+                            required
+                            className="w-full p-4 rounded-xl bg-black/10 text-black placeholder-black/40 outline-none focus:ring-2 focus:ring-black/20 transition-shadow"
+                          />
+                          <input
+                            type="text"
+                            placeholder="What's your Idea..."
+                            required
+                            className="w-full p-4 rounded-xl bg-black/10 text-black placeholder-black/40 outline-none focus:ring-2 focus:ring-black/20 transition-shadow"
+                          />
+                        </motion.div>
+                      )}
                     </motion.div>
                   </motion.div>
-                )}
+                </motion.div>
+              ) : null}
             </AnimatePresence>
 
             {isBuffering && <LoadingCat />}
           </motion.div>
         </LayoutGroup>
       </main>
-
-      <AnimatePresence>
-        {(isWidgetOpen || isInfoOpen) && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-              onClick={handleCloseModal}
-            />
-
-            <motion.div
-              layout="position"
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={smoothTransition}
-              className="relative w-[280px] max-w-[90vw] m-4"
-            >
-              <motion.div
-                layout="position"
-                initial={{ y: -20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.1, ...smoothTransition }}
-                className="bg-white text-black rounded-full px-4 py-2 mb-4 mx-auto flex items-center justify-between gap-4 w-fit"
-              >
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={handleCloseModal}
-                  className="p-1 hover:bg-black/10 rounded-full transition-colors"
-                >
-                  <X size={18} strokeWidth={3} className="text-black/60" />
-                </motion.button>
-                <span className="text-black">
-                  {isInfoOpen ? "About" : "Join waiting list"}
-                </span>
-                {!isInfoOpen && (
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="p-1 hover:bg-black/10 rounded-full transition-colors"
-                  >
-                    <Check
-                      size={18}
-                      strokeWidth={3}
-                      className="text-green-600"
-                      onClick={() => {
-                        console.log("Thanks for joining the waiting list!");
-                        toast("Thanks for joining the waiting list!", {
-                          description:
-                            "We'll keep you updated with the latest news",
-                        });
-                      }}
-                    />
-                  </motion.button>
-                )}
-              </motion.div>
-
-              <motion.div
-                layout="position"
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2, ...smoothTransition }}
-                className="bg-white rounded-3xl p-6 shadow-lg w-full"
-              >
-                {isInfoOpen ? (
-                  <motion.div
-                    layout="position"
-                    className="space-y-4 text-center"
-                  >
-                    <div className="text-xs text-black/60">0.0.1</div>
-                    <div className="text-xl font-medium text-black">
-                      BuildThatIdea
-                    </div>
-                    <p className="text-black/80">
-                      Build your next big idea
-                      <br />
-                      with our AI Companion
-                    </p>
-                    <div className="bg-black/10 text-black rounded-full px-4 py-2 text-sm">
-                      http://buildthatidea.com
-                    </div>
-                  </motion.div>
-                ) : (
-                  <motion.div layout="position" className="space-y-3">
-                    <input
-                      type="text"
-                      placeholder="Type your name..."
-                      required
-                      className="w-full p-4 rounded-xl bg-black/10 text-black placeholder-black/40 outline-none focus:ring-2 focus:ring-black/20 transition-shadow"
-                    />
-                    <input
-                      type="email"
-                      placeholder="Type your email..."
-                      required
-                      className="w-full p-4 rounded-xl bg-black/10 text-black placeholder-black/40 outline-none focus:ring-2 focus:ring-black/20 transition-shadow"
-                    />
-                    <input
-                      type="text"
-                      placeholder="What's your Idea..."
-                      required
-                      className="w-full p-4 rounded-xl bg-black/10 text-black placeholder-black/40 outline-none focus:ring-2 focus:ring-black/20 transition-shadow"
-                    />
-                  </motion.div>
-                )}
-              </motion.div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
