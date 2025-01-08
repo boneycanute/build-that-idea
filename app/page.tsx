@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { Play, Pause, ChevronRight, X, Check } from "lucide-react";
+import { DotPattern } from "@/components/ui/dot-pattern";
+import { cn } from "@/lib/utils";
 
 const LoadingCat = () => (
   <div className="absolute inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
@@ -41,14 +43,32 @@ export default function Home() {
     mass: 1,
   };
 
+  const calculateVideoWidth = () => {
+    const videoHeight = window.innerHeight * 0.7; // 70vh
+    const aspectRatio = 9 / 16;
+    return videoHeight * aspectRatio;
+  };
+
+  useEffect(() => {
+    // Update width on resize
+    const handleResize = () => {
+      setWidgetWidth(calculateVideoWidth());
+    };
+    // Set initial width
+    setWidgetWidth(calculateVideoWidth());
+    setIsVideoReady(true);
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const handleCloseModal = () => {
     setIsModalClosing(true);
     setIsWidgetOpen(false);
     setIsInfoOpen(false);
-    // Reset the closing state after animation
     setTimeout(() => {
       setIsModalClosing(false);
-    }, 300); // Match this with your animation duration
+    }, 300);
   };
 
   const togglePlayPause = async () => {
@@ -70,32 +90,23 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
-    const updateWidth = () => {
-      if (videoRef.current) {
-        const rect = videoRef.current.getBoundingClientRect();
-        setWidgetWidth(rect.width);
-        setIsVideoReady(true);
-      }
-    };
-
-    const resizeObserver = new ResizeObserver(updateWidth);
-    if (videoRef.current) {
-      resizeObserver.observe(videoRef.current);
-      videoRef.current.addEventListener("loadeddata", updateWidth);
-    }
-
-    return () => {
-      if (videoRef.current) {
-        videoRef.current.removeEventListener("loadeddata", updateWidth);
-      }
-      resizeObserver.disconnect();
-    };
-  }, []);
-
   return (
     <div className="relative w-full min-h-screen bg-black">
-      <main className="w-full min-h-screen flex flex-col items-center justify-center p-4 md:p-8">
+      {/* Background Dot Pattern */}
+      <DotPattern
+        width={32}
+        height={32}
+        cx={2}
+        cy={2}
+        cr={1.5}
+        className={cn(
+          "opacity-40",
+          "fill-white",
+          "[mask-image:radial-gradient(1200px_circle_at_center,white,transparent)]"
+        )}
+      />
+
+      <main className="relative z-10 w-full min-h-screen flex flex-col items-center justify-center p-4 md:p-8">
         <LayoutGroup>
           <motion.div
             ref={containerRef}
